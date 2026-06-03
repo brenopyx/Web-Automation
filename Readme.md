@@ -18,6 +18,7 @@ Projeto criado para estudar testes de automação web com [Playwright](https://p
 - Login válido
 - Login inválido
 - Login com campos em branco (usuário/senha)
+- Teste de produtos (Adcionar/Remover do carrinho e validar)
 
 ### Tecnológias
 
@@ -50,6 +51,7 @@ Project created to study web automation testing with [Playwright](https://playwr
 - Valid login
 - Invalid login
 - Login with blank fields (user/password)
+- Product testing (Add/Remove from cart and validate)
 
 ### Technologies
 
