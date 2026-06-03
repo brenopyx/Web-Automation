@@ -19,6 +19,7 @@ Projeto criado para estudar testes de automação web com [Playwright](https://p
 - Login inválido
 - Login com campos em branco (usuário/senha)
 - Teste de produtos (Adcionar/Remover do carrinho e validar)
+- Teste de checkout
 
 ### Tecnológias
 
@@ -63,6 +64,7 @@ Project created to study web automation testing with [Playwright](https://playwr
 - Repository of the clone
 - Dependecies Install
 - Run tests
+- Checkout test
 
 ```bash
 playwriht install
