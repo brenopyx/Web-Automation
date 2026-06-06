@@ -1,5 +1,33 @@
 from playwright.sync_api import sync_playwright, expect
 
+def login(page, username, password):
+    page.locator("[data-test=\"username\"]").fill(username)
+    page.locator("[data-test=\"password\"]").fill(password)
+    page.locator("[data-test=\"login-button\"]").click()
+
+def add_to_cart(page):
+    page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click()
+    page.locator('[data-test="add-to-cart-sauce-labs-bike-light"]').click()
+    page.locator(".shopping_cart_link").click()
+
+def validate_cart(page, expected_products):
+    carrinho_itens = page.locator('[data-test="inventory-item"]')
+    assert carrinho_itens.count() == len(expected_products)
+
+    for produto in expected_products:
+        expect(page.locator("body")).to_contain_text(produto)
+
+def remove_product(page):
+    page.locator('[data-test="remove-sauce-labs-bike-light"]').click()
+    carrinho_itens = page.locator('[data-test="inventory-item"]')
+    assert carrinho_itens.count() == 1
+
+def return_home(page):
+    page.locator(".bm-burger-button").click()
+    page.locator('[data-test="inventory-sidebar-link"]').click()
+    page.locator('[data-test="add-to-cart-sauce-labs-bolt-t-shirt"]').click()
+    page.locator(".shopping_cart_link").click()
+
 with sync_playwright() as p:
     browser = p.chromium.launch(headless= False)
     page = browser.new_page()
@@ -7,34 +35,21 @@ with sync_playwright() as p:
     page.goto("https://www.saucedemo.com/")
 
     # Login
-    page.locator("[data-test=\"username\"]").fill("standard_user")
-    page.locator("[data-test=\"password\"]").fill("secret_sauce")
-    page.locator("[data-test=\"login-button\"]").click()
+    login(page, "standard_user", "secret_sauce")
 
     #Add item no carrinho
-    page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click()
-    page.locator('[data-test="add-to-cart-sauce-labs-bike-light"]').click()
-    page.locator(".shopping_cart_link").click()
+    add_to_cart(page)
     
     #Verificar item no carinho e validar
-    carrinho_itens = page.locator('[data-test="inventory-item"]')
-    assert carrinho_itens.count() == 2
-    expect(page.locator('[data-test="item-4-title-link"]')).to_contain_text("Sauce Labs Backpack")
-    expect(page.locator('[data-test="item-0-title-link"]')).to_contain_text("Sauce Labs Bike Light")
+    validate_cart(page, ["Sauce Labs Backpack", "Sauce Labs Bike Light"])
     
     #Remover Bike light do carrinho
-    page.locator('[data-test="remove-sauce-labs-bike-light"]').click()
-    assert carrinho_itens.count() == 1
+    remove_product(page)
 
     #Volta para lista de produtos
-    page.locator(".bm-burger-button").click()
-    page.locator('[data-test="inventory-sidebar-link"]').click()
-    page.locator('[data-test="add-to-cart-sauce-labs-bolt-t-shirt"]').click()
+    return_home(page)
 
     #Volta para o carrinho e verifica
-    page.locator(".shopping_cart_link").click()
-    expect(page.locator('[data-test="item-4-title-link"]')).to_contain_text("Sauce Labs Backpack")
-    expect(page.locator('[data-test="item-1-title-link"]')).to_contain_text("Sauce Labs Bolt T-Shirt")
-    assert carrinho_itens.count() == 2
-
+    validate_cart(page, ["Sauce Labs Backpack", "Sauce Labs Bolt T-Shirt"])
+    
     browser.close()
